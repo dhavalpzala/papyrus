@@ -15,7 +15,7 @@ import * as _  from 'lodash'
         (mousedown)="emitMouseEvent($event)"
         (mouseup)="emitMouseEvent($event)"
         (mousemove)="emitMouseEvent($event)"
-        (mouseout)="($event.relatedTarget.localName==='div')?emitMouseEvent($event):undefined"
+        (mouseout)="($event?.relatedTarget?.localName==='div')?emitMouseEvent($event):undefined"
         (click)="clickEvent($event)"
         (dblclick)="emitMouseEvent($event)"
       >
@@ -51,8 +51,8 @@ export class VisualizationCanvas implements AfterViewInit, OnChanges {
       selectedStepSubject = subjects[Messages.CHANGE_STEP_SELECTION]
 
     removeStepSubject.subscribe({
-      next: (uuid: string) => {
-        this.removeStepElement(uuid)
+      next: (step: Step) => {
+        this.removeStepElement(step.uuid)
       }
     })
 
@@ -183,8 +183,11 @@ export class VisualizationCanvas implements AfterViewInit, OnChanges {
 
   private removeStepElement(uuid: string) {
     if (uuid) {
-      this.vis.nativeElement.removeChild(this.stepElementMap.get(uuid))
-      this.stepElementMap.delete(uuid)
+      const element = this.stepElementMap.get(uuid)
+      if (element) {
+        this.vis.nativeElement.removeChild(element)
+        this.stepElementMap.delete(uuid)
+      }
     }
   }
 

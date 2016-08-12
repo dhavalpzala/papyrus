@@ -12,7 +12,7 @@ export interface Executable<T> {
 export class Step implements Executable<Picture> {
   private _uuid: string = ''
 
-  constructor(public command: Command, public data: Object) {
+  constructor(public command: Command, public data: Object, public parent: Executable = undefined) {
     this._uuid = generateUUID()
   }
 

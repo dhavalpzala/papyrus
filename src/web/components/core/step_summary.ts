@@ -14,7 +14,7 @@ import { Messages, subjects } from 'src/web/services/messages'
         class="step"
         [class.selected]="stepSummary.step === currentStep"
         *ngFor="#stepSummary of block?.getSummary(); #i=index;"
-        (click)="clickEvent(stepSummary)"
+        (click)="clickEvent($event, stepSummary)"
       >
         <div class="step-content">
           <div *ngIf="hasPreview(stepSummary.step)">
@@ -24,7 +24,7 @@ import { Messages, subjects } from 'src/web/services/messages'
           <div class="step-summary">
             <span class="summary">{{stepSummary.summary}}</span>
           </div>
-          <div class="remove-icon" (click)="removeStep(stepSummary.step)">
+          <div class="remove-icon" (click)="removeStep($event, stepSummary.step)">
             <i class="fa fa-times-circle" aria-hidden="true"></i>
           </div>
         </div>
@@ -53,7 +53,9 @@ export class StepSummaryComponent {
     })
   }
 
-  clickEvent(stepSummary: StepSummary) {
+  clickEvent(e: Event, stepSummary: StepSummary) {
+    e.preventDefault()
+
     if (stepSummary.step instanceof Step) {
       this.selectStep(stepSummary.step)
 
@@ -74,8 +76,11 @@ export class StepSummaryComponent {
     this.selectedStep.emit({ step })
   }
 
-  removeStep(step: Step) {
-    this.removedStep.emit({ step })
+  removeStep(e: Event, step: Step) {
+    e.preventDefault()
+
+    const removeStepSubject = subjects[Messages.REMOVE_STEP]
+    removeStepSubject.next(step)
   }
 
   isBlock(step: Executable) {

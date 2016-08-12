@@ -1,4 +1,4 @@
-import { Executable } from './step'
+import { Executable, Step } from './step'
 import { StepSummary } from './step_summary'
 import { generateUUID } from '../utils/uuid'
 import { Scope } from '../core/scope'
@@ -22,15 +22,21 @@ export class Block implements Executable<Picture> {
 
   add(step: Executable<any>) {
     if (this._steps && step) {
+      step.parent = this
       this._steps.push(step)
     }
   }
 
   remove(step: Executable<any>) {
     if (this._steps && step) {
-      const index = this._steps.indexOf(step)
-      if (index !== -1) {
-        this._steps.splice(index, 1)
+      if (step instanceof Block) {
+
+      } else if (step instanceof Step && step.parent) {
+        const steps = step.parent._steps,
+          index = steps.indexOf(step)
+        if (index !== -1) {
+          steps.splice(index, 1)
+        }
       }
     }
   }
